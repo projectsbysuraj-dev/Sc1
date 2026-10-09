@@ -65,19 +65,11 @@ export default function App() {
   const [showVerification, setShowVerification] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     if (checkIsAdminRoute()) return false;
-    const currentUser = getCurrentUser();
+    // App open hote hi direct open ho - device verification screen block nahi karega
     const search = new URLSearchParams(window.location.search);
     const hash = window.location.hash;
-    const isVerifyParam = search.get('verify') === 'true' || hash.includes('verify=true');
-    const boundId = localStorage.getItem('rg_bound_telegram_id_v1');
-    // STRICT MODE:
-    // 1. If explicit verify param is present
-    // 2. If phone is bound to a different Telegram ID (anti-account switch lock)
-    // 3. If user has not yet completed device verification
-    if (isVerifyParam) return true;
-    if (boundId && boundId !== String(currentUser.id)) return true;
-    if (!currentUser.deviceVerified) return true;
-    return false;
+    const isExplicitVerify = search.get('verify') === 'true' || hash.includes('verify=true');
+    return isExplicitVerify;
   });
 
   const handleNavigateToUserApp = useCallback(() => {

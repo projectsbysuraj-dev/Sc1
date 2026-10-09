@@ -561,8 +561,8 @@ export function getAllUsers(): UserProfile[] {
       friendsJoined: 0,
       spinsEarned: 1,
       createdAt: Date.now(),
-      isVerified: false,
-      deviceVerified: false,
+      isVerified: true,
+      deviceVerified: true,
       claimedWelcomeSpin: false,
     };
     const starterList = [initialUser];
@@ -766,8 +766,8 @@ export function getCurrentUser(): UserProfile {
       friendsJoined: 0,
       spinsEarned: 1,
       createdAt: Date.now(),
-      isVerified: false,
-      deviceVerified: false,
+      isVerified: true,
+      deviceVerified: true,
       photoUrl: tgUser?.photo_url,
       claimedWelcomeSpin: false,
     };
@@ -782,6 +782,12 @@ export function getCurrentUser(): UserProfile {
     });
     user = newUser;
   } else {
+    // Ensure user has deviceVerified set so they never get blocked
+    if (!user.deviceVerified) {
+      user.deviceVerified = true;
+      user.isVerified = true;
+      saveUsers(users);
+    }
     // Sync latest Telegram metadata if available
     if (tgUser) {
       const freshName = `${tgUser.first_name}${tgUser.last_name ? ' ' + tgUser.last_name : ''}`.trim();
